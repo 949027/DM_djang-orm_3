@@ -50,7 +50,12 @@ def create_commendation(student_name, subject):
     )
 
 
-def main():
+if __name__ == '__main__':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+    django.setup()
+    from datacenter.models import Mark, Chastisement, Schoolkid, Lesson, \
+        Commendation
+
     parser = argparse.ArgumentParser(
         description='Скрипт исправляет плохие оценки, удаляет замечания'
                     'и добавляет хороший отзыв'
@@ -70,11 +75,3 @@ def main():
         print('Найдено более одного ученика')
     except IndexError:
         print('Неверное название предмета')
-
-
-if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
-    django.setup()
-    from datacenter.models import Mark, Chastisement, Schoolkid, Lesson, \
-        Commendation
-    main()
