@@ -5,20 +5,23 @@ import argparse
 import django
 
 
-def fix_marks(student_name):
-    schoolkid = Schoolkid.objects.get(full_name__contains=student_name)
+def get_schoolkid(name):
+    schoolkid = Schoolkid.objects.get(full_name__contains=name)
+    return schoolkid
+
+
+def fix_marks(schoolkid):
     bad_marks = Mark.objects.filter(schoolkid=schoolkid, points__in=['2', '3'])
     for mark in bad_marks:
         mark.points = '5'
         mark.save()
 
 
-def remove_chastisements(student_name):
-    schoolkid = Schoolkid.objects.get(full_name__contains=student_name)
+def remove_chastisements(schoolkid):
     Chastisement.objects.filter(schoolkid=schoolkid).delete()
 
 
-def create_commendation(student_name, subject):
+def create_commendation(schoolkid, subject):
     commendations = [
         'Молодец!', 'Отлично!', 'Хорошо!', 'Гораздо лучше, чем я ожидал!',
         'Ты меня приятно удивил!', 'Великолепно!', 'Прекрасно!',
@@ -33,7 +36,7 @@ def create_commendation(student_name, subject):
         'Мы с тобой не зря поработали!', 'Я вижу, как ты стараешься!',
         'Ты растешь над собой!', 'Ты многое сделал, я это вижу!',
         'Теперь у тебя точно все получится!']
-    schoolkid = Schoolkid.objects.get(full_name__contains=student_name)
+
     lessons = Lesson.objects.filter(
         year_of_study=schoolkid.year_of_study,
         group_letter=schoolkid.group_letter,
@@ -63,10 +66,12 @@ if __name__ == '__main__':
     parser.add_argument('name', help='ФИО ученика')
     parser.add_argument('subject', help='Название предмета')
     args = parser.parse_args()
+
     try:
-        fix_marks(args.name)
-        remove_chastisements(args.name)
-        create_commendation(args.name, args.subject)
+        schoolkid = get_schoolkid(args.name)
+        fix_marks(schoolkid)
+        remove_chastisements(schoolkid)
+        create_commendation(schoolkid, args.subject)
     except Schoolkid.DoesNotExist:
         print('Не найден ученик')
     except Schoolkid.MultipleObjectsReturned:
