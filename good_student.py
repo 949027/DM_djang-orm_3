@@ -63,12 +63,10 @@ if __name__ == '__main__':
     parser.add_argument('name', help='ФИО ученика')
     parser.add_argument('subject', help='Название предмета')
     args = parser.parse_args()
-    name = args.name.replace('_', ' ')
-    subject = args.subject.replace('_', ' ')
     try:
-        fix_marks(name)
-        remove_chastisements(name)
-        create_commendation(name, subject)
+        fix_marks(args.name)
+        remove_chastisements(args.name)
+        create_commendation(args.name, args.subject)
     except Schoolkid.DoesNotExist:
         print('Не найден ученик')
     except Schoolkid.MultipleObjectsReturned:
