@@ -37,13 +37,12 @@ def create_commendation(schoolkid, subject):
         'Ты растешь над собой!', 'Ты многое сделал, я это вижу!',
         'Теперь у тебя точно все получится!']
 
-    lessons = Lesson.objects.filter(
+    lesson = Lesson.objects.filter(
         year_of_study=schoolkid.year_of_study,
         group_letter=schoolkid.group_letter,
         subject__title=subject
-    )
-    random_lesson_number = random.randint(0, lessons.count())
-    lesson = lessons[random_lesson_number]
+    ).order_by('?').first()
+
     Commendation.objects.create(
         text=random.choice(commendations),
         created=lesson.date,
@@ -76,5 +75,5 @@ if __name__ == '__main__':
         print('Не найден ученик')
     except Schoolkid.MultipleObjectsReturned:
         print('Найдено более одного ученика')
-    except IndexError:
+    except AttributeError:
         print('Неверное название предмета')
